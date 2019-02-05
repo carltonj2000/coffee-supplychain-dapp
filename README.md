@@ -12,16 +12,16 @@ The goal of this DAPP is to track a coffee supply chain.
 
 ## Activity
 
-![](images/CoffeeActivity.svg)
+![](images/CoffeeActivity.png)
 
 ## Sequence
 
-![](images/CoffeeSequence.svg)
+![](images/CoffeeSequence.png)
 
 ## State
 
-![](images/CoffeeState.svg)
+![](images/CoffeeState.png)
 
 ## Class
 
-![](images/CoffeeClass.svg)
+![](images/CoffeeClass.png)
