@@ -24,4 +24,4 @@ The goal of this DAPP is to track a coffee supply chain.
 
 ## Class
 
-![](images/CoffeeClass2.svg)
+![](images/CoffeeClass.svg)
