@@ -41,10 +41,26 @@ contract("SupplyChain", function(accounts) {
   console.log("Retailer: accounts[3] ", accounts[3]);
   console.log("Consumer: accounts[4] ", accounts[4]);
 
+  let supplyChain;
+
+  before(async () => {
+    supplyChain = await SupplyChain.deployed();
+    // add default farmer and remove contract owner as a farmer
+    await supplyChain.addFarmer(originFarmerID);
+    await supplyChain.renounceFarmer();
+    // add default distributor and remove contract owner as a distributor
+    await supplyChain.addDistributor(distributorID);
+    await supplyChain.renounceDistributor();
+    // add default retailer and remove contract owner as a retailer
+    await supplyChain.addRetailer(retailerID);
+    await supplyChain.renounceRetailer();
+    // add default consumer and remove contract owner as a consumer
+    await supplyChain.addConsumer(consumerID);
+    await supplyChain.renounceConsumer();
+  });
+
   // 1st Test
   it("Testing smart contract function harvestItem() that allows a farmer to harvest coffee", async () => {
-    const supplyChain = await SupplyChain.deployed();
-
     // Declare and Initialize a variable for event
     var eventEmitted = false;
 
@@ -59,7 +75,8 @@ contract("SupplyChain", function(accounts) {
       originFarmInformation,
       originFarmLatitude,
       originFarmLongitude,
-      productNotes
+      productNotes,
+      { from: originFarmerID }
     );
     // Retrieve the just now saved item from blockchain by calling function fetchItem()
     const resultBufferOne = await supplyChain.fetchItemBufferOne.call(upc);
@@ -70,7 +87,7 @@ contract("SupplyChain", function(accounts) {
     assert.equal(resultBufferOne[1], upc, "Error: Invalid item UPC");
     assert.equal(
       resultBufferOne[2],
-      ownerID,
+      originFarmerID,
       "Error: Missing or Invalid ownerID"
     );
     assert.equal(
@@ -101,10 +118,9 @@ contract("SupplyChain", function(accounts) {
     assert.equal(resultBufferTwo[5], 0, "Error: Invalid item State");
     assert.equal(eventEmitted, true, "Invalid event emitted");
   });
+
   // 2nd Test
   it("Testing smart contract function processItem() that allows a farmer to process coffee", async () => {
-    const supplyChain = await SupplyChain.deployed();
-
     // Declare and Initialize a variable for event
     var eventEmitted = false;
 
@@ -112,7 +128,7 @@ contract("SupplyChain", function(accounts) {
     await supplyChain.Processed().watch((err, res) => (eventEmitted = true));
 
     // Mark an item as Processed by calling function processItem()
-    await supplyChain.processItem(upc);
+    await supplyChain.processItem(upc, { from: originFarmerID });
 
     // Retrieve the just now saved item from blockchain by calling function fetchItem()
     const resultBufferTwo = await supplyChain.fetchItemBufferTwo.call(upc);
@@ -124,8 +140,6 @@ contract("SupplyChain", function(accounts) {
 
   // 3rd Test
   it("Testing smart contract function packItem() that allows a farmer to pack coffee", async () => {
-    const supplyChain = await SupplyChain.deployed();
-
     // Declare and Initialize a variable for event
     var eventEmitted = false;
 
@@ -133,7 +147,7 @@ contract("SupplyChain", function(accounts) {
     await supplyChain.Packed().watch((err, res) => (eventEmitted = true));
 
     // Mark an item as Packed by calling function packItem()
-    await supplyChain.packItem(upc);
+    await supplyChain.packItem(upc, { from: originFarmerID });
 
     // Retrieve the just now saved item from blockchain by calling function fetchItem()
     const resultBufferTwo = await supplyChain.fetchItemBufferTwo.call(upc);
@@ -145,8 +159,6 @@ contract("SupplyChain", function(accounts) {
 
   // 4th Test
   it("Testing smart contract function sellItem() that allows a farmer to sell coffee", async () => {
-    const supplyChain = await SupplyChain.deployed();
-
     // Declare and Initialize a variable for event
     var eventEmitted = false;
 
@@ -154,7 +166,7 @@ contract("SupplyChain", function(accounts) {
     await supplyChain.ForSale().watch((err, res) => (eventEmitted = true));
 
     // Mark an item as ForSale by calling function sellItem()
-    await supplyChain.sellItem(upc, productPrice);
+    await supplyChain.sellItem(upc, productPrice, { from: originFarmerID });
 
     const resultBufferTwo = await supplyChain.fetchItemBufferTwo.call(upc);
 
@@ -166,8 +178,6 @@ contract("SupplyChain", function(accounts) {
 
   // 5th Test
   it("Testing smart contract function buyItem() that allows a distributor to buy coffee", async () => {
-    const supplyChain = await SupplyChain.deployed();
-
     // Declare and Initialize a variable for event
     var eventEmitted = false;
 
@@ -194,10 +204,9 @@ contract("SupplyChain", function(accounts) {
       "Error: Invalid distributor"
     );
   });
+
   // 6th Test
   it("Testing smart contract function shipItem() that allows a distributor to ship coffee", async () => {
-    const supplyChain = await SupplyChain.deployed();
-
     // Declare and Initialize a variable for event
     var eventEmitted = false;
 
@@ -205,7 +214,7 @@ contract("SupplyChain", function(accounts) {
     await supplyChain.Shipped().watch((err, res) => (eventEmitted = true));
 
     // Mark an item as Sold by calling function buyItem()
-    await supplyChain.shipItem(upc);
+    await supplyChain.shipItem(upc, { from: originFarmerID });
 
     // Retrieve the just now saved item from blockchain by calling function fetchItem()
     const resultBufferTwo = await supplyChain.fetchItemBufferTwo.call(upc);
@@ -217,8 +226,6 @@ contract("SupplyChain", function(accounts) {
 
   // 7th Test
   it("Testing smart contract function receiveItem() that allows a retailer to mark coffee received", async () => {
-    const supplyChain = await SupplyChain.deployed();
-
     // Declare and Initialize a variable for event
     var eventEmitted = false;
 
@@ -241,8 +248,6 @@ contract("SupplyChain", function(accounts) {
 
   // 8th Test
   it("Testing smart contract function purchaseItem() that allows a consumer to purchase coffee", async () => {
-    const supplyChain = await SupplyChain.deployed();
-
     // Declare and Initialize a variable for event
     var eventEmitted = false;
 

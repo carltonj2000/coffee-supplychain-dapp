@@ -147,7 +147,7 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole,
     // In the constructor set 'owner' to the address that instantiated the contract
     // and set 'sku' to 1
     // and set 'upc' to 1
-    constructor() public payable {
+    constructor() public payable FarmerRole() DistributorRole() RetailerRole() ConsumerRole() {
         owner = msg.sender;
         sku = 1;
         upc = 1;
@@ -168,8 +168,9 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole,
         string _originFarmInformation,
         string  _originFarmLatitude,
         string  _originFarmLongitude,
-        string  _productNotes) public 
+        string  _productNotes) public onlyFarmer()
     {
+        require(isFarmer(_originFarmerID), "must be a valid farmer");
         // Add the new item as part of Harvest
         Item memory item;
         item.sku = sku;
@@ -240,6 +241,8 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole,
         paidEnough(items[_upc].productPrice)
         // Call modifer to send any excess ether back to buyer
         checkValue(_upc)
+        // Call modifier to verify caller of this function
+        onlyDistributor()
         {
         // Update the appropriate fields - ownerID, distributorID, itemState
         items[_upc].ownerID = msg.sender;
@@ -257,7 +260,7 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole,
         // Call modifier to check if upc has passed previous supply chain stage
         sold(_upc)
         // Call modifier to verify caller of this function
-        onlyDistributor()
+        onlyFarmer()
         {
         // Update the appropriate fields
         items[_upc].itemState = State.Shipped;
@@ -270,6 +273,8 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole,
     function receiveItem(uint _upc) public 
         // Call modifier to check if upc has passed previous supply chain stage
         shipped(_upc)
+        // Call modifier to verify caller of this function
+        onlyRetailer()
         // Access Control List enforced by calling Smart Contract / DApp
         {
         // Update the appropriate fields - ownerID, retailerID, itemState
@@ -285,6 +290,8 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole,
     function purchaseItem(uint _upc) public 
         // Call modifier to check if upc has passed previous supply chain stage
         received(_upc)
+        // Call modifier to verify caller of this function
+        onlyConsumer()
         // Access Control List enforced by calling Smart Contract / DApp
         {
         // Update the appropriate fields - ownerID, consumerID, itemState
