@@ -79,22 +79,25 @@ App = {
       );
     }
 
-    App.getMetaskAccountID();
+    await App.getMetaskAccountID();
 
     return App.initSupplyChain();
   },
 
-  getMetaskAccountID: function() {
+  getMetaskAccountID: async function() {
     web3 = new Web3(App.web3Provider);
 
     // Retrieving accounts
-    web3.eth.getAccounts(function(err, res) {
-      if (err) {
-        console.log("Error:", err);
-        return;
-      }
-      console.log("getMetaskID:", res);
-      App.metamaskAccountID = res[0];
+    await new Promise((resolve, reject) => {
+      web3.eth.getAccounts(function(err, res) {
+        if (err) {
+          console.log("Error:", err);
+          return reject(err);
+        }
+        console.log("getMetaskID:", res);
+        App.metamaskAccountID = res[0];
+        return resolve(App.metamaskAccountID);
+      });
     });
   },
 
@@ -124,10 +127,12 @@ App = {
   handleButtonClick: async function(event) {
     event.preventDefault();
 
-    App.getMetaskAccountID();
-
-    var processId = parseInt($(event.target).data("id"));
+    const id = $(event.target).data("id");
+    if (!id) return;
+    var processId = parseInt(id);
     console.log("processId", processId);
+
+    await App.getMetaskAccountID();
 
     switch (processId) {
       case 1:
@@ -159,6 +164,21 @@ App = {
         break;
       case 10:
         return await App.fetchItemBufferTwo(event);
+        break;
+      case 11:
+        return await App.addFarmer(event);
+        break;
+      case 12:
+        return await App.addDistributor(event);
+        break;
+      case 13:
+        return await App.addRetailer(event);
+        break;
+      case 14:
+        return await App.addConsumer(event);
+        break;
+      case 15:
+        return await App.addRoles(event);
         break;
     }
   },
@@ -250,6 +270,7 @@ App = {
     App.contracts.SupplyChain.deployed()
       .then(function(instance) {
         const walletValue = web3.toWei(3, "ether");
+        console.log(walletValue);
         return instance.buyItem(App.upc, {
           from: App.metamaskAccountID,
           value: walletValue
@@ -375,6 +396,103 @@ App = {
       .catch(function(err) {
         console.log(err.message);
       });
+  },
+
+  addFarmer: function() {
+    App.roleId = $("#role").val();
+    console.log("role ID", App.roleId);
+
+    App.contracts.SupplyChain.deployed()
+      .then(function(instance) {
+        return instance.addFarmer(App.roleId);
+      })
+      .then(function(result) {
+        $("#ftc-item").text(result);
+        console.log("addFarmer", result);
+      })
+      .catch(function(err) {
+        console.log(err.message);
+      });
+  },
+
+  addDistributor: function() {
+    App.roleId = $("#role").val();
+    console.log("role ID", App.roleId);
+
+    App.contracts.SupplyChain.deployed()
+      .then(function(instance) {
+        return instance.addDistributor(App.roleId);
+      })
+      .then(function(result) {
+        $("#ftc-item").text(result);
+        console.log("addDistributor", result);
+      })
+      .catch(function(err) {
+        console.log(err.message);
+      });
+  },
+
+  addRetailer: function() {
+    App.roleId = $("#role").val();
+    console.log("role ID", App.roleId);
+
+    App.contracts.SupplyChain.deployed()
+      .then(function(instance) {
+        return instance.addRetailer(App.roleId);
+      })
+      .then(function(result) {
+        $("#ftc-item").text(result);
+        console.log("addRetailer", result);
+      })
+      .catch(function(err) {
+        console.log(err.message);
+      });
+  },
+
+  addConsumer: function() {
+    App.roleId = $("#role").val();
+    console.log("role ID", App.roleId);
+
+    App.contracts.SupplyChain.deployed()
+      .then(function(instance) {
+        return instance.addConsumer(App.roleId);
+      })
+      .then(function(result) {
+        $("#ftc-item").text(result);
+        console.log("addConsumer", result);
+      })
+      .catch(function(err) {
+        console.log(err.message);
+      });
+  },
+
+  /* Used to speed up testing/debug. Change the hardcode roles as needed. */
+  addRoles: async function() {
+    try {
+      const contract = await App.contracts.SupplyChain.deployed();
+      const farmer = await contract.addFarmer(
+        "0x7d8a2B9E922728cf145d3bc93F2949fBe10a1381"
+      );
+      const distributor = await contract.addDistributor(
+        "0x23C8C725Bfbd457cE4628f8bD9F8b575A8Bf83Fc"
+      );
+      const retailer = await contract.addRetailer(
+        "0x4074FF7917749e31E13371b7d9F7842B8c1F1ac3"
+      );
+      const consumer = await contract.addConsumer(
+        "0xa21697229806F436a6AE94153BF3efff4545B0bc"
+      );
+      await contract.renounceFarmer();
+      await contract.renounceDistributor();
+      await contract.renounceRetailer();
+      await contract.renounceConsumer();
+      console.log("farmer", farmer);
+      console.log("distributor", distributor);
+      console.log("retailer", retailer);
+      console.log("consumer", consumer);
+    } catch (e) {
+      console.log("error", e);
+    }
   }
 };
 

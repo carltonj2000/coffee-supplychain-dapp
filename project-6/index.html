@@ -21,6 +21,48 @@
     </div>
 
     <div id="ftc-harvest">
+      <h2>Add Role</h2>
+      <div class="form-group">
+        Role ID / Address
+        <br />
+        <input
+          class="input-field"
+          type="text"
+          id="role"
+          name="role"
+          value=""
+        /><br />
+        <div class="button-div">
+          <button class="btn-farmer" id="button" type="button" data-id="11">
+            Farmer
+          </button>
+          <button
+            class="btn-distributor"
+            id="button"
+            type="button"
+            data-id="12"
+          >
+            Distributor
+          </button>
+          <button class="btn-retailer" id="button" type="button" data-id="13">
+            Retailer
+          </button>
+          <button class="btn-consumer" id="button" type="button" data-id="14">
+            Consumer
+          </button>
+          <!-- change hardcoded values before using for testing/debugging -->
+          <!-- enable below by changing display to inline-block -->
+          <button
+            style="display: inline-block;"
+            class="btn-roles"
+            id="button"
+            type="button"
+            data-id="15"
+          >
+            Auto
+          </button>
+        </div>
+      </div>
       <h2>Product Overview</h2>
       <div class="form-group">
         SKU

@@ -19,6 +19,7 @@ contract("SupplyChain", function(accounts) {
   const distributorID = accounts[2];
   const retailerID = accounts[3];
   const consumerID = accounts[4];
+  const newOwnerID = accounts[5];
   const emptyAddress = "0x00000000000000000000000000000000000000";
 
   ///Available Accounts
@@ -40,6 +41,7 @@ contract("SupplyChain", function(accounts) {
   console.log("Distributor: accounts[2] ", accounts[2]);
   console.log("Retailer: accounts[3] ", accounts[3]);
   console.log("Consumer: accounts[4] ", accounts[4]);
+  console.log("New Owner: accounts[5] ", accounts[5]);
 
   let supplyChain;
 
@@ -184,11 +186,23 @@ contract("SupplyChain", function(accounts) {
     // Watch the emitted event Sold()
     await supplyChain.Sold().watch((err, res) => (eventEmitted = true));
 
+    // const farmB4 = web3.eth.getBalance(originFarmerID);
+    // const distB4 = web3.eth.getBalance(distributorID);
+
     // Mark an item as Sold by calling function buyItem()
     await supplyChain.buyItem(upc, {
       from: distributorID,
       value: productPrice
     });
+
+    // const farmAftr = web3.eth.getBalance(originFarmerID);
+    // const distAftr = web3.eth.getBalance(distributorID);
+
+    // console.log(
+    //   "delta farmer dist",
+    //   farmAftr.minus(farmB4).toNumber(),
+    //   distAftr.minus(distB4).toNumber()
+    // );
 
     // Retrieve the just now saved item from blockchain by calling function fetchItem()
     const resultBufferOne = await supplyChain.fetchItemBufferOne.call(upc);
@@ -270,8 +284,6 @@ contract("SupplyChain", function(accounts) {
 
   // 9th Test
   it("Testing smart contract function fetchItemBufferOne() that allows anyone to fetch item details from blockchain", async () => {
-    const supplyChain = await SupplyChain.deployed();
-
     // Retrieve the just now saved item from blockchain by calling function fetchItem()
     const resultBufferOne = await supplyChain.fetchItemBufferOne.call(upc);
 
@@ -308,8 +320,6 @@ contract("SupplyChain", function(accounts) {
 
   // 10th Test
   it("Testing smart contract function fetchItemBufferTwo() that allows anyone to fetch item details from blockchain", async () => {
-    const supplyChain = await SupplyChain.deployed();
-
     // Retrieve the just now saved item from blockchain by calling function fetchItem()
     const resultBufferTwo = await supplyChain.fetchItemBufferTwo.call(upc);
 
@@ -335,5 +345,16 @@ contract("SupplyChain", function(accounts) {
     );
     assert.equal(resultBufferTwo[7], retailerID, "Error: Invalid retailerID");
     assert.equal(resultBufferTwo[8], consumerID, "Error: Invalid consumerID");
+  });
+
+  // 11th Test
+  it("Testing smart contract ownership transfer", async () => {
+    const originalOwner = await supplyChain.owner();
+    await supplyChain.transferOwnership(newOwnerID);
+    const newOwner = await supplyChain.owner();
+
+    // Verify the result set:
+    assert.equal(originalOwner, ownerID, "Error: Invalid original owner");
+    assert.equal(newOwner, newOwnerID, "Error: Invalid new owner");
   });
 });
