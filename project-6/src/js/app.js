@@ -180,6 +180,9 @@ App = {
       case 15:
         return await App.addRoles(event);
         break;
+      case 16:
+        return await App.sequence(event);
+        break;
     }
   },
 
@@ -250,7 +253,7 @@ App = {
       .then(function(instance) {
         const productPrice = web3.toWei(1, "ether");
         console.log("productPrice", productPrice);
-        return instance.sellItem(App.upc, App.productPrice, {
+        return instance.sellItem(App.upc, productPrice, {
           from: App.metamaskAccountID
         });
       })
@@ -466,30 +469,103 @@ App = {
       });
   },
 
-  /* Used to speed up testing/debug. Change the hardcode roles as needed. */
+  /* To use update hardcoded role addresses below. */
   addRoles: async function() {
     try {
+      const owner = "0xa60d54a13e8c8e3df2f6f2ca355087cb57b33049";
       const contract = await App.contracts.SupplyChain.deployed();
-      const farmer = await contract.addFarmer(
-        "0x7d8a2B9E922728cf145d3bc93F2949fBe10a1381"
-      );
-      const distributor = await contract.addDistributor(
+      const ownerDeployed = await contract.owner();
+      if (ownerDeployed !== owner)
+        return alert(
+          "To use this button modify addRoles - the last function in app.js."
+        );
+
+      await contract.addFarmer("0x7d8a2B9E922728cf145d3bc93F2949fBe10a1381");
+      await contract.addDistributor(
         "0x23C8C725Bfbd457cE4628f8bD9F8b575A8Bf83Fc"
       );
-      const retailer = await contract.addRetailer(
-        "0x4074FF7917749e31E13371b7d9F7842B8c1F1ac3"
-      );
-      const consumer = await contract.addConsumer(
-        "0xa21697229806F436a6AE94153BF3efff4545B0bc"
-      );
+      await contract.addRetailer("0x4074FF7917749e31E13371b7d9F7842B8c1F1ac3");
+      await contract.addConsumer("0xa21697229806F436a6AE94153BF3efff4545B0bc");
       await contract.renounceFarmer();
       await contract.renounceDistributor();
       await contract.renounceRetailer();
       await contract.renounceConsumer();
-      console.log("farmer", farmer);
-      console.log("distributor", distributor);
-      console.log("retailer", retailer);
-      console.log("consumer", consumer);
+    } catch (e) {
+      console.log("error", e);
+    }
+  },
+
+  state: 0,
+  deployed: null,
+  /* To use change debug to true and update hardcoded roles addresses below. */
+  sequence: async function() {
+    const updateButtonText = () => {
+      document.getElementById("button16").innerHTML = `Sequence ${App.state}`;
+    };
+    try {
+      if (App.state === 0) {
+        App.state = 1;
+        updateButtonText();
+        return alert("change to metamask account 0");
+      }
+      if (App.state === 1) {
+        App.state = 2;
+        updateButtonText();
+        return await App.addRoles();
+      }
+      if (App.state === 2) {
+        App.state = 3;
+        updateButtonText();
+        return alert("change to metamask account 1");
+      }
+      if (App.state === 3) {
+        App.state = 4;
+        updateButtonText();
+        return await App.contracts.SupplyChain.deployed()
+          .then(function(instance) {
+            App.deployed = instance;
+            return App.deployed.harvestItem(
+              App.upc,
+              App.metamaskAccountID,
+              App.originFarmName,
+              App.originFarmInformation,
+              App.originFarmLatitude,
+              App.originFarmLongitude,
+              App.productNotes
+            );
+          })
+          .then(() =>
+            App.deployed.processItem(App.upc, { from: App.metamaskAccountID })
+          )
+          .then(() =>
+            App.deployed.packItem(App.upc, { from: App.metamaskAccountID })
+          )
+          .then(
+            () =>
+              console.log("inst", App.deployed) ||
+              App.deployed.sellItem(App.upc, web3.toWei(1, "ether"), {
+                from: App.metamaskAccountID
+              })
+          );
+      }
+      if (App.state === 4) {
+        App.state = 5;
+        updateButtonText();
+        console.log("inst 1", App.deployed);
+        return alert("change to metamask account 2");
+      }
+      console.log("inst 2", App.deployed);
+      if (App.state === 5) {
+        App.state = 6;
+        updateButtonText();
+        console.log("inst 3", App.deployed);
+        App.deployed
+          .buyItem(App.upc, {
+            from: App.metamaskAccountID,
+            value: web3.toWei(3, "ether")
+          })
+          .then(result => console.log("buyItem", result));
+      }
     } catch (e) {
       console.log("error", e);
     }

@@ -65,7 +65,8 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole,
     event Processed(uint upc);
     event Packed(uint upc);
     event ForSale(uint upc);
-    event Sold(uint upc);
+    //event Sold(uint upc, );
+    event Sold(uint upc, address sender, address getter, uint price, uint amount);
     event Shipped(uint upc);
     event Received(uint upc);
     event Purchased(uint upc);
@@ -92,10 +93,10 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole,
     
     // Define a modifier that checks the price and refunds the remaining balance
     modifier checkValue(uint _upc) {
-        _;
         uint _price = items[_upc].productPrice;
         uint amountToReturn = msg.value - _price;
-        items[_upc].distributorID.transfer(amountToReturn);
+        msg.sender.transfer(amountToReturn);
+        _;
     }
 
     // Define a modifier that checks if an item.state of a upc is Harvested
@@ -253,7 +254,7 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole,
         // Transfer money to farmer
         items[_upc].originFarmerID.transfer(items[_upc].productPrice);
         // emit the appropriate event
-        emit Sold(_upc);
+        emit Sold(_upc, msg.sender, items[_upc].originFarmerID, items[_upc].productPrice, msg.value);
     }
 
     // Define a function 'shipItem' that allows the distributor to mark an item 'Shipped'

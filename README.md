@@ -14,7 +14,24 @@ The initial skeleton code use in this repository is provided by Udacity from
 - Truffle v4.1.15 (core: 4.1.15)
 - Solidity v0.4.25 (solc-js)
 
-# Local Test Instructions
+# Rinkeby Results
+
+The contract addresses and transaction hashs follow.
+
+- Contract Address - 0xabce
+
+| Event    | Transaction Hash |
+| -------- | ---------------- |
+| Harvest  | 0xabcd           |
+| Process  | 0xabcd           |
+| Pack     | 0xabcd           |
+| ForSale  | 0xabcd           |
+| Buy      | 0xabcd           |
+| Ship     | 0xabcd           |
+| Receive  | 0xabcd           |
+| Purchase | 0xabcd           |
+
+## Local Test Instructions
 
 - Install the truffle version specified in the
   [Software Version Used](#Software-Versions-Used)
@@ -22,6 +39,8 @@ The initial skeleton code use in this repository is provided by Udacity from
 - Install browser extension [MetaMask](https://metamask.io/).
 - Start the `Ganache GUI`.
 - Import the accounts from the `Ganache GUI` to metamask.
+- If accounts were previously imported and if necessary in `MetaMask` all the
+  accounts can be reset via `Settings`->`Reset Account`.
 - All the following commands should be run in the `project-6` directory.
 - Run the contract tests via: `truffle test --network ganachegui`.
 - Deploy the contract by running the following command in the :
@@ -38,34 +57,22 @@ The initial skeleton code use in this repository is provided by Udacity from
   - Purchase
   - Fetch Data 1
   - Fetch Data 2
-- The ganache GUI
-
-# Implementation Notes
-
-- In order not to be able to
-
-# Rinkeby Execution Instructions
-
-The contract was deployed to the Rinkeby network under the following addresses
-
-- 0xabce, and
-- 0xabcd.
-
-The first contract address allows anyone to add roles to the contract.
-The second contract only allows the deployer to add roles to the contract.
-Line xx in SupplyChain.sol is what is different between the two contracts.
-
-The contract
+- Note that role IDs shown in the web browser GUI are not used because
+  the metamask role IDs are used.
+- Roles can be added via the `Add Role` section of the web GUI.
+  For repetitive testing the `Auto` button can be used after the role account
+  ID are updated/hardcoded in `addRoles` function at the end of app.js.
+- The [Sequence Diagram](#Sequence) show the sequence the contract follows.
 
 ## Coffee Supplly Chain Diagrams
-
-### Activity
-
-![](images/CoffeeActivity.png)
 
 ### Sequence
 
 ![](images/CoffeeSequence.png)
+
+### Activity
+
+![](images/CoffeeActivity.png)
 
 ### State
 
@@ -79,4 +86,4 @@ The contract
 
 Can ignore everything below this as I use it as a scratch pad.
 
-Read students comment up to date Feb 20/2019.
+Read Student Hub from March 22/2019 on, as I read all previous comments.
