@@ -4,8 +4,8 @@ A coffee bean supply chain is tracked via this Ethereum DAPP.
 The DAPP was completed for the
 [Udacity Blockchain Term 2 Project 6 Part B](https://www.udacity.com/course/blockchain-developer-nanodegree--nd1309).
 The diagrams for Part A are in the
-[](Coffee Supply Chain Diagrams)
-section towards to end of this document.
+[Coffee Supplly Chain Diagrams](Coffee-Supply-Chain-Diagrams)
+section towards the end of this document.
 The initial skeleton code use in this repository is provided by Udacity from
 [here](https://github.com/udacity/nd1309-Project-6b-Example-Template).
 
@@ -18,33 +18,34 @@ The initial skeleton code use in this repository is provided by Udacity from
 
 The contract addresses and transaction hashs follow.
 
-- Contract Address - 0xabce
+- Contract Address - 0xcbe1c9028115ca97880e80df6acd13c7cd82a894
 
-| Event    | Transaction Hash |
-| -------- | ---------------- |
-| Harvest  | 0xabcd           |
-| Process  | 0xabcd           |
-| Pack     | 0xabcd           |
-| ForSale  | 0xabcd           |
-| Buy      | 0xabcd           |
-| Ship     | 0xabcd           |
-| Receive  | 0xabcd           |
-| Purchase | 0xabcd           |
+| Event    | Transaction Hash                                                   |
+| -------- | ------------------------------------------------------------------ |
+| Harvest  | 0xc0d1cf9fff05862932e73d2c62176fa415d8f83447c87cf82256105c6e2224d8 |
+| Process  | 0x1467cf3a0400cdf516493450ac758f524ff617ab0c5e460a97b45655c3095340 |
+| Pack     | 0x5233abc1d150000a37081895981ed89f91a9e96e4f51ce04a224696cf5ca43e8 |
+| ForSale  | 0x2447530a0523221be4fc796f583e0975ce79d263669534d3c81884e6f25815b7 |
+| Buy      | 0xb429ba1df6ab509df075180b4b459a68908a5799bdbf6982c2ba64923a916d03 |
+| Ship     | 0x36f0d6614e4fcb50d70143560ef0b6198362e7eb90affa62df608fcf712b85a4 |
+| Receive  | 0xdb7354dc6c6cb8d23eea9ff873e1739a2176950bd962897a275cde0970951106 |
+| Purchase | 0x297e44ae35cfbb6e90a2d620bd7fae67357c52a711c135911f21e8e4dc065d1b |
 
 ## Local Test Instructions
 
 - Install the truffle version specified in the
   [Software Version Used](#Software-Versions-Used)
   section.
-- Install browser extension [MetaMask](https://metamask.io/).
+- Install the browser extension [MetaMask](https://metamask.io/).
 - Start the `Ganache GUI`.
 - Import the accounts from the `Ganache GUI` to metamask.
 - If accounts were previously imported and if necessary in `MetaMask` all the
   accounts can be reset via `Settings`->`Reset Account`.
 - All the following commands should be run in the `project-6` directory.
 - Run the contract tests via: `truffle test --network ganachegui`.
-- Deploy the contract by running the following command in the :
-  `truffle migrate --compile-all --reset --network ganachegui`.
+- Deploy the contract by running either of the following commands:
+  `truffle migrate --compile-all --reset --network ganachegui` or
+  `truffle migrate --compile-all --reset --network rinkeby`.
 - Start the GUI by running `npm run dev`.
 - Use the web browser button in the following order to verify the contract:
   - Harvest
