@@ -80,18 +80,17 @@ App = {
     }
 
     await App.getMetaskAccountID();
-
     return App.initSupplyChain();
   },
 
-  getMetaskAccountID: async function() {
+  getMetaskAccountID: function() {
     web3 = new Web3(App.web3Provider);
 
     // Retrieving accounts
-    await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       web3.eth.getAccounts(function(err, res) {
         if (err) {
-          console.log("Error:", err);
+          console.log("MetaMask Account Error:", err);
           return reject(err);
         }
         console.log("getMetaskID:", res);
@@ -101,23 +100,25 @@ App = {
     });
   },
 
-  initSupplyChain: function() {
+  initSupplyChain: async function() {
+    App.bindEvents();
     /// Source the truffle compiled smart contracts
     var jsonSupplyChain = "../../build/contracts/SupplyChain.json";
 
     /// JSONfy the smart contracts
-    $.getJSON(jsonSupplyChain, function(data) {
-      console.log("data", data);
-      var SupplyChainArtifact = data;
-      App.contracts.SupplyChain = TruffleContract(SupplyChainArtifact);
-      App.contracts.SupplyChain.setProvider(App.web3Provider);
+    return new Promise(resolve => {
+      $.getJSON(jsonSupplyChain, function(data) {
+        console.log("data", data);
+        var SupplyChainArtifact = data;
+        App.contracts.SupplyChain = TruffleContract(SupplyChainArtifact);
+        App.contracts.SupplyChain.setProvider(App.web3Provider);
 
-      App.fetchItemBufferOne();
-      App.fetchItemBufferTwo();
-      App.fetchEvents();
+        App.fetchItemBufferOne();
+        App.fetchItemBufferTwo();
+        App.fetchEvents();
+        resolve();
+      });
     });
-
-    return App.bindEvents();
   },
 
   bindEvents: function() {
@@ -189,9 +190,11 @@ App = {
   harvestItem: function(event) {
     event.preventDefault();
     var processId = parseInt($(event.target).data("id"));
-
+    App.readForm();
     App.contracts.SupplyChain.deployed()
       .then(function(instance) {
+        console.log(instance.address);
+        console.log(App.metamaskAccountID);
         return instance.harvestItem(
           App.upc,
           App.metamaskAccountID,
@@ -199,7 +202,8 @@ App = {
           App.originFarmInformation,
           App.originFarmLatitude,
           App.originFarmLongitude,
-          App.productNotes
+          App.productNotes,
+          { from: App.metamaskAccountID }
         );
       })
       .then(function(result) {

@@ -12,7 +12,9 @@ module.exports = {
       provider: function() {
         return new HDWalletProvider(
           secrets.rinkeby.mnemonic,
-          secrets.rinkeby.rpcServer
+          secrets.rinkeby.rpcServer,
+          0,
+          1
         );
       },
       network_id: "4", // Rinkeby ID 4
